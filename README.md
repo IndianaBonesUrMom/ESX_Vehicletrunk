@@ -1,6 +1,6 @@
 # esx_vehicletrunk
 alpha version - use at your own risk
-
+You can remove the debug marker by commenting out the drawmarker function
 Features:  
 1. Hopefully only one player can access one trunk at a time
 2. Some sort of a item limit?
