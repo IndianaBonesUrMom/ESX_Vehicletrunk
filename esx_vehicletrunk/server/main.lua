@@ -110,15 +110,15 @@ ESX.RegisterServerCallback('esx_vehicletrunk:isVehicleJunk', function(source, cb
 	MySQL.Async.fetchAll(
 	'SELECT * FROM owned_vehicles WHERE 1',
 	{},function(result)
-		local junk = 1
-		for i=1, #result, 1 do
-          local vehicleData = json.decode(result[i].vehicle)
-          if vehicleData.plate == plate then
-            junk = 0
-			dbg("vehicle" .. plate .. " is junk")
-            break
-          end
-        end
+	   local junk = 1
+	   for i=1, #result, 1 do
+             local vehicleData = json.decode(result[i].vehicle)
+              if vehicleData.plate == plate then
+                 junk = 0
+	         dbg("vehicle" .. plate .. " not a junkmobile")
+               break
+              end
+         end
 		cb(junk)
 	end)
 end)
