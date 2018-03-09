@@ -86,7 +86,9 @@ ESX.RegisterServerCallback('esx_vehicletrunk:openTrunk', function(source, cb, pl
 	dbg("Trunk opening for " .. plate)
 	if TrunksInUse[plate] ~= nil then
 		cb({error = true})
-		TriggerEvent('esx_vehicletrunk:checkForGlitchedTrunks', ESX.GetPlayerFromId(source).identifier)
+		if Config.EnableEmergencyRelease then
+			TriggerEvent('esx_vehicletrunk:checkForGlitchedTrunks', ESX.GetPlayerFromId(source).identifier)
+		end
 		return
 	end
 	local xPlayer = ESX.GetPlayerFromId(source)
