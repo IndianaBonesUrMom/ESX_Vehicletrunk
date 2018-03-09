@@ -1,7 +1,5 @@
 # esx_vehicletrunk
 alpha version - use at your own risk 
-
-You can remove the debug marker by commenting out the drawmarker function  
 Features:  
 1. One player can access one trunk at a time
 2. Item limit. 
@@ -11,6 +9,7 @@ Features:
 
 Todo:
 1. Reduce JSON string length with clientside functions for item and weapon labels.
+2. Remove entries after players have sold their vehicles (just delete empty trunks?)
 
 
 ![alt_text](https://i.imgur.com/oHkWuul.jpg)
