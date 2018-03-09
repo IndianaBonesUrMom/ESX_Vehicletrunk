@@ -32,8 +32,7 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
 end)
 
 function getAnusVector(entity)
-	local hr = GetEntityHeading(entity) 
-	hr = hr - 90 
+	local hr = GetEntityHeading(entity) - 90
 	if hr < 0 then
 		hr = 360 + hr
 	end
