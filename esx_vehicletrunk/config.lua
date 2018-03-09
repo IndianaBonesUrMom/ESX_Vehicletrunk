@@ -7,6 +7,7 @@ Config.Radius = 5.5 --Vehicle search radius
 Config.Ammo = 92 --Ammo to give player on weapon pull
 Config.AllowEmpty = true --Allow empty weapons to be stored (no ammo system(too lazy) so you can get ammo by simply adding weapons inside the trunk)
 Config.EnableDupeProtection = true --Delete trunk content if trunk was open and player leaves the server
+Config.EnableEmergencyRelease = false --Releases glitched trunks
 
 
 Config.LinersTake = {
