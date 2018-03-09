@@ -10,7 +10,7 @@ Features:
 5. Players can't search locked vehicles
 
 Todo:
-1. Reduce JSON string length with clientside functions to redeem item and weapon labels.
+1. Reduce JSON string length with clientside functions for item and weapon labels.
 
 
 ![alt_text](https://i.imgur.com/oHkWuul.jpg)
