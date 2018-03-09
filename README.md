@@ -1,12 +1,13 @@
 # esx_vehicletrunk
-alpha version - use at your own risk  
+alpha version - use at your own risk 
+
 You can remove the debug marker by commenting out the drawmarker function  
 Features:  
-1. Hopefully only one player can access one trunk at a time
-2. Some sort of a item limit?
-3. Players can spawn weapon ammo(gives the config.default amount on item pull) until I have time to make this count ammo.
-4. Only one JSON entry per vehicle (have to get rid of the owned vehicles callback too.)
-5. Entries for stolen vehicles are removed each restart
-6. Players can't search locked vehicles
+1. One player can access one trunk at a time
+2. Item limit. 
+3. Only one JSON entry per vehicle (have to get rid of the owned vehicles callback too.)
+4. Entries for stolen vehicles are removed on each restart
+5. Players can't search locked vehicles
+6.
 
 ![alt_text](https://i.imgur.com/oHkWuul.jpg)
