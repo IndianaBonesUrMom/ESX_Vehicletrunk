@@ -32,9 +32,9 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
 end)
 
 function getAnusVector(entity)
-	local hr = GetEntityHeading(entity) - 90
-	if hr < 0 then
-		hr = 360 + hr
+	local hr = GetEntityHeading(entity) - 90.0
+	if hr < 0.0 then
+		hr = 360.0 + hr
 	end
 	hr = hr * 0.0174533
 	return {
@@ -46,19 +46,17 @@ end
 function IsDistanceOk()
 	local c = GetEntityCoords(GetPlayerPed(-1))
 	local f = getAnusVector(currentVehicle)
-	local c2 = GetEntityCoords(currentVehicle)
-	local x, y, z   = table.unpack(c2)
+	local x, y, z   = table.unpack(GetEntityCoords(currentVehicle))
 	x = x + f.x
 	y = y + f.y
 	return GetDistanceBetweenCoords(c, x, y, z, true) <= Config.MaxDistance
 end
 
 Citizen.CreateThread(function()
-	while true do
+	while Config.EnableDebugMarker do
 		if currentVehicle ~= nil then
 			local f = getAnusVector(currentVehicle)
-			local c2 = GetEntityCoords(currentVehicle)
-			local x, y, z   = table.unpack(c2)
+			local x, y, z   = table.unpack(GetEntityCoords(currentVehicle))
 			x = x + f.x
 			y = y + f.y
 			DrawMarker(20, x, y, z + 1.15, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 25, 115, false, true, 2, false, false, false, false)
@@ -93,10 +91,8 @@ AddEventHandler('esx_vehicletrunk:onQuit', function()
 	end
 	trunkIsOpen = false
 	ESX.UI.Menu.CloseAll()
-	ESX.TriggerServerCallback('esx_vehicletrunk:isVehicleJunk', function(junk)
-		TriggerServerEvent('esx_vehicletrunk:release', currentPlate, json.encode(currentContent), currentExists, junk)
-		ESX.ShowNotification('Pewäkontin sisältö ~r~tallennettu~w~.')
-	end, currentPlate)
+	TriggerServerEvent('esx_vehicletrunk:release', currentPlate, json.encode(currentContent), currentExists)
+	ESX.ShowNotification('Pewäkontin sisältö ~g~tallennettu~w~.')
 	TriggerEvent('esx_vehicletrunk:onTrunkClose')
 end)
 

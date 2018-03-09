@@ -37,6 +37,22 @@ AddEventHandler('esx:playerDropped', function(source)
   end
 end)
 
+IsVehicleJunk = function(plate)
+	local plate = plate
+	MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE 1', {}, function(result)
+			for i = 1, #result, 1 do
+				local vehicleData = json.decode(result[i].vehicle)
+				if vehicleData.plate == plate then
+					dbg("vehicle" .. plate .. " is not junk")
+					return 0
+				end
+			end
+			dbg("vehicle" .. plate .. " is junk")
+			return 1
+		end
+	)
+end
+
 AddEventHandler('esx_vehicletrunk:checkForGlitchedTrunks', function(id)
 	for i, j in pairs(TrunksInUse) do
 		if j == id then
@@ -48,13 +64,14 @@ AddEventHandler('esx_vehicletrunk:checkForGlitchedTrunks', function(id)
 end)
 
 RegisterServerEvent('esx_vehicletrunk:release')
-AddEventHandler('esx_vehicletrunk:release', function(plate, content, exists, junk)
-	dbg("Trunk released")
+AddEventHandler('esx_vehicletrunk:release', function(plate, content, exists)
+	local junk = IsVehicleJunk(plate)
 	local query = 'INSERT INTO vehicle_trunks (`plate`, `content`, `junk`) VALUES (@plate, @content, @junk)'
 	if exists then
 		query = 'UPDATE vehicle_trunks SET content = @content, junk = @junk WHERE plate = @plate'
 	end
 	MySQL.Async.execute(query, {['@plate'] = plate, ['@content'] = content, ['@junk'] = junk}, function(rows) if TrunksInUse[plate] ~= nil then TrunksInUse[plate] = nil end end)
+	dbg("Trunk released")
 end)
 
 RegisterServerEvent('esx_vehicletrunk:giveWeapon')
@@ -86,7 +103,7 @@ ESX.RegisterServerCallback('esx_vehicletrunk:openTrunk', function(source, cb, pl
 	dbg("Trunk opening for " .. plate)
 	if TrunksInUse[plate] ~= nil then
 		cb({error = true})
-		if Config.EnableEmergencyRelease then
+		if Config.CheckForGlitchedTrunks then
 			TriggerEvent('esx_vehicletrunk:checkForGlitchedTrunks', ESX.GetPlayerFromId(source).identifier)
 		end
 		return
@@ -106,23 +123,3 @@ ESX.RegisterServerCallback('esx_vehicletrunk:openTrunk', function(source, cb, pl
 		end
 	end)
 end)
-
-ESX.RegisterServerCallback('esx_vehicletrunk:isVehicleJunk', function(source, cb, plateTemp)
-	local plate = plateTemp
-	MySQL.Async.fetchAll(
-	'SELECT * FROM owned_vehicles WHERE 1',
-	{},function(result)
-	   local junk = 1
-	   for i=1, #result, 1 do
-             local vehicleData = json.decode(result[i].vehicle)
-              if vehicleData.plate == plate then
-                 junk = 0
-	         dbg("vehicle" .. plate .. " not a junkmobile")
-               break
-              end
-         end
-		cb(junk)
-	end)
-end)
-
-
