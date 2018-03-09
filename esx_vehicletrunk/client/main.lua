@@ -3,8 +3,9 @@
 ]]--
 --ESX as usual--------------------------------------------------------
 ESX = nil
-PlayerData = nil
+TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
+PlayerData = nil
 trunkIsOpen = false
 currentExists = false
 currentVehicle = nil
@@ -19,7 +20,7 @@ function dbg(msg)
 	end
 end
 ---
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
