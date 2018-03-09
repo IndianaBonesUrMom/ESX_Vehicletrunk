@@ -59,7 +59,7 @@ Citizen.CreateThread(function()
 			local x, y, z   = table.unpack(GetEntityCoords(currentVehicle))
 			x = x + f.x
 			y = y + f.y
-			DrawMarker(20, x, y, z + 1.15, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 25, 115, false, true, 2, false, false, false, false)
+			DrawMarker(20, x, y, z + 0.85, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 25, 115, false, true, 2, false, false, false, false)
 		end
 		Citizen.Wait(0)
 	end

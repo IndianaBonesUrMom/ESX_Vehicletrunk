@@ -38,19 +38,14 @@ AddEventHandler('esx:playerDropped', function(source)
 end)
 
 IsVehicleJunk = function(plate)
-	local plate = plate
-	MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE 1', {}, function(result)
-			for i = 1, #result, 1 do
-				local vehicleData = json.decode(result[i].vehicle)
-				if vehicleData.plate == plate then
-					dbg("vehicle" .. plate .. " is not junk")
-					return 0
-				end
-			end
-			dbg("vehicle" .. plate .. " is junk")
-			return 1
+	local result = MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE 1')
+	for i = 1, #result, 1 do
+		if json.decode(result[i].vehicle).plate == plate then
+			dbg("vehicle" .. plate .. " is not junk")
+			return 0
 		end
-	)
+	end
+	return 1
 end
 
 AddEventHandler('esx_vehicletrunk:checkForGlitchedTrunks', function(id)
