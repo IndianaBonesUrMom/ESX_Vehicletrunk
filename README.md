@@ -1,8 +1,8 @@
 # esx_vehicletrunk
 alpha version - use at your own risk  
 
-#YOU NEED TO ADD PLATE COLUMN IN YOUR OWNED_VEHICLES TABLE  
-And also run the /cvrtdb command code
+YOU NEED TO ADD PLATE COLUMN IN YOUR OWNED_VEHICLES TABLE  
+And run the /cvrtdb command code
 
 Features:  
 1. One player can access one trunk at a time
