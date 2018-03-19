@@ -135,7 +135,7 @@ function OpenInventoryDialog(item, itemCount, itemLabel, OGitemLimit, take)
 	ESX.UI.Menu.Open(
 		'dialog', GetCurrentResourceName(), 'vehicle_count',
 		{
-			title = "_U('quantity'),
+			title = _U('quantity'),
 		},
 		function(data, menu)
 			local count = tonumber(data.value)
@@ -273,7 +273,7 @@ function AddWeaponsMenu()
   ESX.UI.Menu.Open(
     'default', GetCurrentResourceName(), 'add_weapon',
     {
-      title    = _U('weap'),,
+      title    = _U('weap'),
       align    = 'top-right',
       elements = elements,
     },
@@ -288,7 +288,7 @@ function AddWeaponsMenu()
 		ESX.UI.Menu.Open(
 		'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog',
 		{
-			title = " _U('sure') " .. data.current.label .. "?"
+			title = _U('sure')  .. data.current.label .. "?"
 			
 		},function(data2, menu2)
 			menu2.close()
@@ -340,13 +340,13 @@ function OpenTrunkMenu()
 				
 			})
 		end
-		table.insert(elements, {label = 'Lisää esine', value = 'add_item'})
-		table.insert(elements, {label = 'Lisää ase', value = 'add_weapon'})
+		table.insert(elements, {label = _U('add_item'), value = 'add_item'})
+		table.insert(elements, {label = _U('add_weap'), value = 'add_weapon'})
 		
 		ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'trunk_menu',
 		{
-		    title    = '_U('trunk'),' .. currentPlate,
+		    title    = _U('trunk') .. currentPlate,
 			align    = 'top-right',
 			elements = elements
 		},
@@ -357,7 +357,7 @@ function OpenTrunkMenu()
 				ESX.UI.Menu.Open(
 				'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog',
 				{
-					title = "_U('surer'), " .. data.current.label .. "?"
+					title = _U('surer') .. data.current.label .. "?"
 					
 				},function(data2, menu2)
 					menu2.close()
