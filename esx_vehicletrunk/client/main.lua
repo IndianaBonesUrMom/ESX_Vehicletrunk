@@ -3,14 +3,16 @@
 ]]--
 --ESX as usual--------------------------------------------------------
 ESX = nil
+
 Citizen.CreateThread(function()
-  while ESX == nil do
-    TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-    Citizen.Wait(1)
-  end
+	while ESX == nil do
+		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+		Citizen.Wait(1)
+	end
 end)
 
 PlayerData = nil
+
 trunkIsOpen = false
 currentExists = false
 currentVehicle = nil
@@ -25,7 +27,6 @@ function dbg(msg)
 	end
 end
 ---
-
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
@@ -70,6 +71,7 @@ Citizen.CreateThread(function()
 	while true do
 		if (trunkIsOpen and currentPlate ~= nil and not IsDistanceOk()) or (trunkIsOpen and IsPedInAnyVehicle(GetPlayerPed(-1))) or (trunkIsOpen and IsDoorLocked()) then
 			TriggerEvent('esx_vehicletrunk:onQuit')
+			Citizen.Wait(500)
 		end
 		Citizen.Wait(100)
 	end
