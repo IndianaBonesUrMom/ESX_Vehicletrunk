@@ -9,7 +9,7 @@ Config.AllowEmpty = true --Allow empty weapons to be stored (no ammo system(too 
 Config.EnableDupeProtection = true --Delete trunk content if trunk was open and player leaves the server
 Config.CheckForGlitchedTrunks = false --Release glitched trunks
 Config.EnableDebugMarker = false --Debug marker (see github readme img)
-
+Config.Locale                     = 'en'
 
 Config.LinersTake = {
 	"No otat sen nyt silti.",
