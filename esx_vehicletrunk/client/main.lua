@@ -135,7 +135,7 @@ function OpenInventoryDialog(item, itemCount, itemLabel, OGitemLimit, take)
 	ESX.UI.Menu.Open(
 		'dialog', GetCurrentResourceName(), 'vehicle_count',
 		{
-			title = "Syötä lukumäärä"
+			title = "_U('quantity'),
 		},
 		function(data, menu)
 			local count = tonumber(data.value)
@@ -173,7 +173,7 @@ function AddItemsMenu()
 		ESX.UI.Menu.Open(
 		  'default', GetCurrentResourceName(), 'inventory_menu',
 		  {
-			title    = "Reppu - Aseta peräkonttiin",
+			title    = _U('trunk'),
 			align    = "top-right",
 			elements = options,
 		  },
@@ -273,7 +273,7 @@ function AddWeaponsMenu()
   ESX.UI.Menu.Open(
     'default', GetCurrentResourceName(), 'add_weapon',
     {
-      title    = "Talleta aseita",
+      title    = _U('weap'),,
       align    = 'top-right',
       elements = elements,
     },
@@ -288,7 +288,7 @@ function AddWeaponsMenu()
 		ESX.UI.Menu.Open(
 		'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog',
 		{
-			title = "Haluatko varmasti lisätä aseen " .. data.current.label .. "?"
+			title = " _U('sure') " .. data.current.label .. "?"
 			
 		},function(data2, menu2)
 			menu2.close()
@@ -346,7 +346,7 @@ function OpenTrunkMenu()
 		ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'trunk_menu',
 		{
-		    title    = 'PEWÄKONTTI - ' .. currentPlate,
+		    title    = '_U('trunk'),' .. currentPlate,
 			align    = 'top-right',
 			elements = elements
 		},
@@ -357,7 +357,7 @@ function OpenTrunkMenu()
 				ESX.UI.Menu.Open(
 				'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog',
 				{
-					title = "Haluatko varmasti ottaa aseen " .. data.current.label .. "?"
+					title = "_U('surer'), " .. data.current.label .. "?"
 					
 				},function(data2, menu2)
 					menu2.close()
