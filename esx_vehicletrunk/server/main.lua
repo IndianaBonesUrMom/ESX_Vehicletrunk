@@ -42,10 +42,10 @@ IsVehicleJunk = function(plate)
 	local result = MySQL.Sync.fetchScalar('SELECT * FROM owned_vehicles WHERE plate = @plate', {['@plate'] = plate})
 	if result then
 		dbg("Vehicle not junk, plate " .. plate)
-		return 1
+		return 0
 	else
 		dbg("Vehicle is junk, plate " .. plate)
-		return 0
+		return 1
 	end
 end
 
