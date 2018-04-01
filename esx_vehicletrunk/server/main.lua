@@ -30,9 +30,8 @@ AddEventHandler('esx:playerDropped', function(source)
 		dbg("Trunk " .. i .." released")
 		if Config.EnableDupeProtection then
 			MySQL.Async.execute('DELETE FROM vehicle_trunks WHERE plate = @plate', { ['@plate'] = i }, function(r) TrunksInUse[j] = nil dbg("Trunk content deleted") end)
-		else
-			TrunksInUse[i] = nil
 		end
+		TrunksInUse[i] = nil
 		break
 	end
   end
