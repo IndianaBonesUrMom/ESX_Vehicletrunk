@@ -5,12 +5,10 @@
 ESX = nil
 
 Citizen.CreateThread(function()
-	dbg('Acquiring shared object')
 	while ESX == nil do
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(1)
 	end
-	dbg('shared object received')
 end)
 
 PlayerData = nil
@@ -539,11 +537,9 @@ end
 
 Citizen.CreateThread(function ()
 	Citizen.Wait(1000)
-	dbg('running...')
 	while true do
 		Citizen.Wait(5)
 		if IsControlJustReleased(0, 38) and not trunkIsOpen and not IsPedInAnyVehicle(GetPlayerPed(-1)) and GetVehicle() and IsDistanceOk() and not IsDoorLocked() then
-			dbg('main thread interrupt...')
 			InitTrunkMenu()
 			Citizen.Wait(900)
 		end
