@@ -59,25 +59,55 @@ AddEventHandler('esx_vehicletrunk:checkForGlitchedTrunks', function(id)
 	end
 end)
 
+ESX.RegisterServerCallback('esx_vehicletrunk:addCash', function(source, cb, sum)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	if xPlayer.get('money') >= sum then
+		xPlayer.removeMoney(sum)
+		cb(sum)
+		return
+	end
+	cb(-1)
+end)
+
+ESX.RegisterServerCallback('esx_vehicletrunk:addDirty', function(source, cb, sum)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	if xPlayer.getAccount('black_money').money >= sum then
+		xPlayer.removeAccountMoney('black_money', sum)
+		cb(sum)
+		return
+	end
+	cb(-1)
+end)
+
+RegisterServerEvent('esx_vehicletrunk:giveCash')
+AddEventHandler('esx_vehicletrunk:giveCash', function(sum)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	xPlayer.addMoney(sum)
+end)
+
+RegisterServerEvent('esx_vehicletrunk:giveDirty')
+AddEventHandler('esx_vehicletrunk:giveDirty', function(sum)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	xPlayer.addAccountMoney('black_money', sum)
+end)
 
 RegisterServerEvent('esx_vehicletrunk:release')
 AddEventHandler('esx_vehicletrunk:release', function(plate, content, exists)
 	local plate = plate
 	local junk = IsVehicleJunk(plate)
 	local query
-	if exists then
-		query = 'UPDATE vehicle_trunks SET content = @content, junk = @junk WHERE plate = @plate'
-	else
-		query = 'INSERT INTO vehicle_trunks (`plate`, `content`, `junk`) VALUES (@plate, @content, @junk)'
-	end
+	if exists then query = 'UPDATE vehicle_trunks SET content = @content, junk = @junk WHERE plate = @plate'
+	else query = 'INSERT INTO vehicle_trunks (`plate`, `content`, `junk`) VALUES (@plate, @content, @junk)' end
+	
 	MySQL.Async.execute(query, {['@plate'] = plate, ['@content'] = content, ['@junk'] = junk}, function(rows) TrunksInUse[plate] = nil end)
 	dbg("Trunk released")
 end)
 
 RegisterServerEvent('esx_vehicletrunk:giveWeapon')
-AddEventHandler('esx_vehicletrunk:giveWeapon', function(weapon)
+AddEventHandler('esx_vehicletrunk:giveWeapon', function(weapon, ammo)
 	local xPlayer = ESX.GetPlayerFromId(source)
-	xPlayer.addWeapon(weapon, Config.Ammo)
+	xPlayer.addWeapon(weapon, 0)
+	TriggerClientEvent('esx_vehicletrunk:addAmmo', weapon, ammo)
 end)
 
 RegisterServerEvent('esx_vehicletrunk:removeWeapon')

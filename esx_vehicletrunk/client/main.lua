@@ -5,10 +5,12 @@
 ESX = nil
 
 Citizen.CreateThread(function()
+	dbg('Acquiring shared object')
 	while ESX == nil do
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(1)
 	end
+	dbg('shared object received')
 end)
 
 PlayerData = nil
@@ -86,6 +88,9 @@ AddEventHandler('esx_vehicletrunk:onTrunkClose', function()
 	SetVehicleDoorShut(currentVehicle,5,0)
 end)
 
+RegisterNetEvent('esx_vehicletrunk:addAmmo', function(weapon, ammo)
+	AddAmmoToPed(GetPlayerPed(-1), weapon , ammo)
+end)
 
 AddEventHandler('esx_vehicletrunk:onQuit', function()
 	if not trunkIsOpen then
@@ -139,7 +144,8 @@ function OpenInventoryDialog(item, itemCount, itemLabel, OGitemLimit, take)
 		},
 		function(data, menu)
 			local count = tonumber(data.value)
-			if count == nil or count < 1 or (take and count > itemCount) or (not take and count > itemLimit) then
+			if count ~= nil then count = math.floor(count) end
+			if count == nil or count < 1 or (take and count > itemCount) or (not take and count > itemLimit) or (not take and count > itemCount) then
 				ESX.ShowNotification("~r~Kehitysvammainen ~w~lukumäärä~r~.")
 			elseif take then
 				TakeItem(item, count)
@@ -174,7 +180,7 @@ function AddItemsMenu()
 		  'default', GetCurrentResourceName(), 'inventory_menu',
 		  {
 			title    = "Reppu - Aseta peräkonttiin",
-			align    = "top-right",
+			align    = "bottom-right",
 			elements = options,
 		  },
 		  function(data, menu)
@@ -194,15 +200,138 @@ function AddItemsMenu()
 	end)
 end
 
-function TakeWeapon(name)
+function AddCashMenu()
+	ESX.UI.Menu.CloseAll()
+	ESX.UI.Menu.Open(
+	'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog3',
+	{
+		title = "Syötä talletuksen summa"	
+	},function(data, menu)
+		local cash = tonumber(data.value)
+		if cash == nil then
+			ESX.ShowNotification("Tapahtui ~r~erhedytys~w~.")
+		else
+			menu.close()
+			ESX.TriggerServerCallback('esx_vehicletrunk:addCash', function(sum)
+				local sum = sum
+				if sum ~= -1 then
+					local found = false
+					for i = 1, #currentContent, 1 do
+						if currentContent[i].type == 'cash' then
+							currentContent[i].count = currentContent[i].count + sum
+							found = true
+							break
+						end
+					end
+					if not found then table.insert(currentContent, {count = sum, type = 'cash'}) end
+				else
+					ESX.ShowNotification('Ei ~r~riittävästi ~w~käteistä.')
+				end
+				OpenTrunkMenu()
+			end, math.floor(cash))
+		end
+end, function(data, menu) menu.close() OpenTrunkMenu() end)
+end
+
+function AddDirtyMenu()
+	ESX.UI.Menu.CloseAll()
+	ESX.UI.Menu.Open(
+	'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog3',
+	{
+		title = "Syötä talletuksen summa"	
+	},function(data, menu)
+		local cash = tonumber(data.value)
+		if cash == nil then
+			ESX.ShowNotification("Tapahtui ~r~erhedytys~w~.")
+		else
+			menu.close()
+			ESX.TriggerServerCallback('esx_vehicletrunk:addDirty', function(sum)
+				if sum ~= -1 then
+					local found = false
+					for i = 1, #currentContent, 1 do
+						if currentContent[i].type == 'dirty' then
+							currentContent[i].count = currentContent[i].count + sum
+							found = true
+							break
+						end
+					end
+					if not found then table.insert(currentContent, {count = sum, type = 'dirty'}) end
+				else
+					ESX.ShowNotification('Ei ~r~riittävästi ~w~likaista rahaa.')
+				end
+				OpenTrunkMenu()
+			end, math.floor(cash))
+		end
+	end, function(data, menu) menu.close() OpenTrunkMenu() end)
+end
+
+function OpenDirtyDialog()
+	ESX.UI.Menu.CloseAll()
+	ESX.UI.Menu.Open(
+	'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog4',
+	{
+		title = "Syötä talletuksen summa"	
+	},function(data, menu)
+		local cash = tonumber(data.value)
+		if cash ~= nil and cash >= 1 then
+			cash = math.floor(cash)
+			for i = 1, #currentContent, 1 do
+				if currentContent[i].type == 'dirty' then
+					if currentContent[i].count > cash then
+						TriggerServerEvent('esx_vehicletrunk:giveDirty', cash)
+						currentContent[i].count = currentContent[i].count - cash
+					elseif currentContent[i].count == cash then
+						TriggerServerEvent('esx_vehicletrunk:giveDirty', cash)
+						table.remove(currentContent, i)
+					elseif currentContent[i].count < cash then
+						ESX.ShowNotification('Yrität nostaa ~r~liikaa~w~..')
+					end 
+					break
+				end
+			end
+			OpenTrunkMenu()
+		else
+			ESX.ShowNotification('~r~kehitysvammainen ~w~summa..')
+		end	
+	end, function(data, menu) menu.close() OpenTrunkMenu() end)
+end
+
+function OpenCashDialog()
+	ESX.UI.Menu.CloseAll()
+	ESX.UI.Menu.Open(
+	'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog5',
+	{
+		title = "Syötä talletuksen summa"	
+	},function(data, menu)
+		local cash = tonumber(data.value)
+		if cash ~= nil and cash >= 1 then
+			cash = math.floor(cash)
+			for i = 1, #currentContent, 1 do
+				if currentContent[i].type == 'cash' then
+					if currentContent[i].count > cash then
+						TriggerServerEvent('esx_vehicletrunk:giveCash', cash)
+						currentContent[i].count = currentContent[i].count - cash
+					elseif currentContent[i].count == cash then
+						TriggerServerEvent('esx_vehicletrunk:giveCash', cash)
+						table.remove(currentContent, i)
+					elseif currentContent[i].count < cash then
+						ESX.ShowNotification('Yrität nostaa ~r~liikaa~w~..')
+					end 
+					break
+				end
+			end
+			OpenTrunkMenu()
+		else
+			ESX.ShowNotification('~r~kehitysvammainen ~w~summa..')
+		end	
+	end, function(data, menu) menu.close() OpenTrunkMenu() end)
+end
+
+function TakeWeapon(name, ammo)
 	local found = false
 	for i = 1, #currentContent, 1 do
-		if currentContent[i].name == name then
-			if currentContent[i].count > 1 then
-				currentContent[i].count = currentContent[i].count - 1
-			else
-				table.remove(currentContent, i)
-			end
+		if currentContent[i].name == name and currentContent[i].count == ammo then
+			table.remove(currentContent, i)
 			found = true
 			break
 		end
@@ -210,7 +339,7 @@ function TakeWeapon(name)
 	if not found then
 		ESX.ShowNotification('~r~Tapahtui erhedytys~w~.')
 	else
-		TriggerServerEvent('esx_vehicletrunk:giveWeapon', name)
+		TriggerServerEvent('esx_vehicletrunk:giveWeapon', name, ammo)
 	end
 end
 
@@ -234,19 +363,10 @@ function TakeItem(name, count)
 	end
 end
 
-function AddWeapon(name, label)
+function AddWeapon(name, ammo)
 	local found = false
 	TriggerServerEvent('esx_vehicletrunk:removeWeapon', name)
-	for i = 1, #currentContent, 1 do
-		if currentContent[i].name == name then
-			currentContent[i].count = currentContent[i].count + 1
-			found = true
-			break
-		end
-	end
-	if not found then
-		table.insert(currentContent, {name = name, label = label, type = 'weapon', count = 1})
-	end
+	table.insert(currentContent, {name = name, type = 'weapon', count = ammo})
 end
 
 function AddWeaponsMenu()
@@ -259,14 +379,8 @@ function AddWeaponsMenu()
     local weaponHash = GetHashKey(weaponList[i].name)
 
     if HasPedGotWeapon(playerPed,  weaponHash,  false) and weaponList[i].name ~= 'WEAPON_UNARMED' then
-	  if not Config.AllowEmpty then
 		local ammo = GetAmmoInPedWeapon(playerPed, weaponHash)
-		if ammo > 0 then
-		  table.insert(elements, {label = weaponList[i].label, value = weaponList[i].name})
-		end
-	  else
-		table.insert(elements, {label = weaponList[i].label, value = weaponList[i].name})
-	  end
+		table.insert(elements, {label = weaponList[i].label .. '[' .. ammo .. ']', value = weaponList[i].name, ammo = ammo})
     end
   end
 
@@ -274,7 +388,7 @@ function AddWeaponsMenu()
     'default', GetCurrentResourceName(), 'add_weapon',
     {
       title    = "Talleta aseita",
-      align    = 'top-right',
+      align    = 'bottom-right',
       elements = elements,
     },
     function(data, menu)
@@ -295,7 +409,7 @@ function AddWeaponsMenu()
 			if data2.value ~= nil and string.lower(data2.value) == 'en' then
 				ESX.ShowNotification(Config.LinersAdd[math.random(1,#Config.LinersAdd)])
 			else
-				AddWeapon(data.current.value, data.current.label) 
+				AddWeapon(data.current.value, data.current.ammo) 
 				OpenTrunkMenu()
 			end
 		end, function(data2, menu2) menu2.close() OpenTrunkMenu() end)
@@ -332,28 +446,55 @@ function OpenTrunkMenu()
 		ESX.UI.Menu.CloseAll()
 		local elements = {}
 		for i = 1, #currentContent, 1 do
-			table.insert(elements, {
-				label = currentContent[i].label .. ' x' .. currentContent[i].count,
-				name = currentContent[i].name,
-				count = currentContent[i].count,
-				type = currentContent[i].type,
-				
-			})
+			if currentContent[i].type == 'weapon' then
+				table.insert(elements, {
+					label = ESX.GetWeaponLabel(currentContent[i].name) .. ' [' .. currentContent[i].count .. ']',
+					name = currentContent[i].name,
+					count = currentContent[i].count,
+					type = currentContent[i].type,
+				})
+			elseif currentContent[i].type == 'cash' then
+				table.insert(elements, {
+					label = Config.Cash .. ' - ' .. currentContent[i].count .. ' €',
+					count = currentContent[i].count,
+					type = currentContent[i].type,
+				})
+			elseif currentContent[i].type == 'dirty' then
+				table.insert(elements, {
+					label = Config.DirtyMoney .. ' - ' .. currentContent[i].count .. ' €',
+					count = currentContent[i].count,
+					type = currentContent[i].type,
+				})
+			elseif currentContent[i].type == 'item' then
+				table.insert(elements, {
+					label = currentContent[i].label .. ' x' .. currentContent[i].count,
+					name = currentContent[i].name,
+					count = currentContent[i].count,
+					type = currentContent[i].type,
+				})
+			end
 		end
-		table.insert(elements, {label = 'Lisää esine', value = 'add_item'})
-		table.insert(elements, {label = 'Lisää ase', value = 'add_weapon'})
+		
+		table.insert(elements, {label = '[ Lisää esine ]', value = 'add_item'})
+		table.insert(elements, {label = '[ Lisää ase ]', value = 'add_weapon'})
+		table.insert(elements, {label = '[ Lisää käteistä ]', value = 'add_cash'})
+		table.insert(elements, {label = '[ Lisää likaista rahaa ]', value = 'add_dirty'})
 		
 		ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'trunk_menu',
 		{
 		    title    = 'PEWÄKONTTI - ' .. currentPlate,
-			align    = 'top-right',
+			align    = 'bottom-right',
 			elements = elements
 		},
 		function(data, menu)
 			menu.close()
 			local data = data
-			if data.current.value == nil and data.current.type == 'weapon' then
+			if data.current.value == nil and data.current.type == 'cash' then
+				OpenCashDialog()
+			elseif data.current.value == nil and data.current.type == 'dirty' then
+				OpenDirtyDialog()
+			elseif data.current.value == nil and data.current.type == 'weapon' then
 				ESX.UI.Menu.Open(
 				'dialog', GetCurrentResourceName(), 'failed_at_coding_dialog',
 				{
@@ -364,7 +505,7 @@ function OpenTrunkMenu()
 					if data2.value ~= nil and string.lower(data2.value) == 'en' then
 						ESX.ShowNotification(Config.LinersTake[math.random(1,#Config.LinersTake)])
 					end
-					TakeWeapon(data.current.name)
+					TakeWeapon(data.current.name, data.current.count)
 					OpenTrunkMenu()
 				end, function(data2, menu2) menu2.close() OpenTrunkMenu() end)
 			elseif data.current.value == nil and data.current.type == 'item' then
@@ -373,8 +514,11 @@ function OpenTrunkMenu()
 				AddItemsMenu()
 			elseif data.current.value == 'add_weapon' then
 				AddWeaponsMenu()
+			elseif data.current.value == 'add_cash' then
+				AddCashMenu()
+			elseif data.current.value == 'add_dirty' then
+				AddDirtyMenu()
 			end
-			--OpenTrunkMenu()
 		end,
 		function(data, menu)
 			  menu.close()
@@ -394,16 +538,15 @@ function GetVehicle()
 end
 
 Citizen.CreateThread(function ()
+	Citizen.Wait(1000)
+	dbg('running...')
 	while true do
 		Citizen.Wait(5)
 		if IsControlJustReleased(0, 38) and not trunkIsOpen and not IsPedInAnyVehicle(GetPlayerPed(-1)) and GetVehicle() and IsDistanceOk() and not IsDoorLocked() then
+			dbg('main thread interrupt...')
 			InitTrunkMenu()
 			Citizen.Wait(900)
 		end
 	end
 end)
-
-
-
-
 
