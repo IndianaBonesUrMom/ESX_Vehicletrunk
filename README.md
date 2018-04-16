@@ -5,8 +5,8 @@ YOU NEED TO ADD PLATE COLUMN IN YOUR OWNED_VEHICLES TABLE
 And run the /cvrtdb command code
 
 Features:  
-1. One player can access one trunk at a time
-2. Item limit. 
+1. One player can access one trunk at a time  
+2. Storage for cash, black money, items and weapons  
 3. Only one JSON entry per vehicle (have to get rid of the owned vehicles callback too.)
 4. Entries for stolen vehicles are removed on each restart
 5. Players can't search locked vehicles
